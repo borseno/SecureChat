@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureChat.Server", "Secure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureChat.Client", "SecureChat.Client\SecureChat.Client.csproj", "{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CryptoAlgorithms", "CryptoAlgorithms\CryptoAlgorithms.fsproj", "{A37B356D-B1C2-45D7-A072-6815E59AE051}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A37B356D-B1C2-45D7-A072-6815E59AE051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A37B356D-B1C2-45D7-A072-6815E59AE051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A37B356D-B1C2-45D7-A072-6815E59AE051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A37B356D-B1C2-45D7-A072-6815E59AE051}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
