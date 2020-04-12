@@ -15,10 +15,9 @@ module RandomOrg =
         if amount = 0 
             then Seq.empty<int>            
         elif amount > 10000
-        then 
+        then             
             let amount, remainder = amount / 10000, amount % 10000 in 
-            Seq.init (amount) (fun _ -> 10000)
-            |> Seq.append ( seq { remainder } )
+            Seq.append (Seq.init (amount) (fun _ -> 10000)) ( seq { remainder } )             
             |> Seq.map (fun i -> _next i (min,max))
             |> Seq.concat
         else
