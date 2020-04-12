@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureChat.Server", "SecureChat.Server\SecureChat.Server.csproj", "{8A555414-DCAA-4B65-9D3B-F55A3DB61285}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureChat.Client", "SecureChat.Client\SecureChat.Client.csproj", "{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureChat.Client", "SecureChat.Client\SecureChat.Client.csproj", "{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{8A555414-DCAA-4B65-9D3B-F55A3DB61285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A555414-DCAA-4B65-9D3B-F55A3DB61285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A555414-DCAA-4B65-9D3B-F55A3DB61285}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F041F123-0E9B-46D4-A7B6-5F9B4CF6503B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
