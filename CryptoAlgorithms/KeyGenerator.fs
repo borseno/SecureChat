@@ -7,27 +7,34 @@ module RandomOrg =
     let formatRequest = sprintf "https://www.random.org/integers/?num=%i&min=%i&max=%i&col=1&base=10&format=plain&rnd=new"
     
     let private _next amount (min, max) =
-        let nums = Http.RequestString(formatRequest amount min max).Split("\n")
-        Seq.take (nums.Length - 1) nums 
-        |> Seq.map (fun i -> Int32.Parse(i))
+        async {
+            let! nums = Http.AsyncRequestString(formatRequest amount min max)
+            let nums = nums.Split("\n") in
+            return Seq.take (nums.Length - 1) nums 
+            |> Seq.map (fun i -> Int32.Parse(i))
+        }
 
-    let next amount (min, max) =
-        if amount = 0 
-            then Seq.empty<int>            
-        elif amount > 10000
-        then             
-            let amount, remainder = amount / 10000, amount % 10000 in 
-            Seq.append (Seq.init (amount) (fun _ -> 10000)) ( seq { remainder } )             
-            |> Seq.map (fun i -> _next i (min,max))
-            |> Seq.concat
-        else
-            _next amount (min,max)
-
+    let next amount (min, max) = 
+        async {
+            if amount = 0 
+                then return Seq.empty<int>            
+            elif amount > 10000
+            then             
+                let amount, remainder = amount / 10000, amount % 10000 in 
+                let! p = Seq.append (Seq.init (amount) (fun _ -> 10000)) ( seq { remainder } )             
+                        |> Seq.map (fun i -> _next i (min,max))
+                        |> Async.Parallel
+                return Seq.concat p
+            else
+                return! ( _next amount (min,max) )
+        }
 module KeyGenerator =
     open System
     
     let getValues count =
-        RandomOrg.next count (1040, 1103)
-        |> Seq.map (fun i -> char i) |> Seq.toArray |> String
+        async {
+            let! randomSeq = RandomOrg.next count (1040, 1103) in
+            return randomSeq |> Seq.map (fun i -> char i) |> Seq.toArray |> String
+        }
 
 

@@ -8,7 +8,7 @@ let (|Int|_|) (str:string) =
     | _ -> None
 
 let printKey length = 
-        let str = CryptoAlgorithms.KeyGenerator.KeyGenerator.getValues length
+        let str = Async.RunSynchronously (CryptoAlgorithms.Helpers.KeyGenerator.getValues length)
         printfn "%s" str
 
 [<EntryPoint>]
@@ -21,7 +21,7 @@ let main argv =
         let input = Console.ReadLine()
         match input with
         | Int num -> 
-            printKey (Int32.Parse input)
+            printKey num
             printfn "-----------------------"
         | _ -> 
             printfn "error, try again"
