@@ -14,14 +14,21 @@ module RandomOrg =
             |> Seq.map (fun i -> Int32.Parse(i))
         }
 
+    let private splitNumberBy maxnum num = 
+        seq {
+            let amount, remainder = num / maxnum, num % maxnum in
+            for i = 1 to amount do
+                10000
+            if remainder > 0 then 
+                remainder
+        }
+
     let next amount (min, max) = 
         async {
             if amount = 0 
                 then return Seq.empty<int>            
-            elif amount > 10000
-            then             
-                let amount, remainder = amount / 10000, amount % 10000 in 
-                let! p = Seq.append (Seq.init (amount) (fun _ -> 10000)) ( seq { remainder } )             
+            elif amount > 10000 then             
+                let! p = splitNumberBy 10000 amount             
                         |> Seq.map (fun i -> _next i (min,max))
                         |> Async.Parallel
                 return Seq.concat p
@@ -36,5 +43,3 @@ module KeyGenerator =
             let! randomSeq = RandomOrg.next count (1040, 1103) in
             return randomSeq |> Seq.map (fun i -> char i) |> Seq.toArray |> String
         }
-
-
