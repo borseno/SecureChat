@@ -27,7 +27,7 @@ namespace SecureChat.Client
             InitializeComponent();
 
             connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:54847/")
+                .WithUrl("http://localhost:54847/chathub")
                 .Build();
 
             StartConnection();
@@ -50,7 +50,14 @@ namespace SecureChat.Client
 
         private async void StartConnection()
         {
-            await connection.StartAsync();
+            try
+            {
+                await connection.StartAsync();
+            }
+            catch (Exception)
+            {
+
+            }
         }
         
 
