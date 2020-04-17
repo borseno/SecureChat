@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using CryptoAlgorithms.Helpers;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,12 +24,12 @@ namespace SecureChat.Client
     public partial class MainWindow : Window
     {
         HubConnection connection;
+        string cifer;
         public MainWindow()
         {
             InitializeComponent();
 
-            connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:54847/chathub")
+            connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
                 .Build();
 
             StartConnection();
@@ -39,13 +41,24 @@ namespace SecureChat.Client
             };
         }
 
-        private void GetNewVernamKey()
+         private void GetCiferFromTxt()
         {
+            string path = @"C:\GitHub\SecureChat\SecureChat.Client\bin\Debug\netcoreapp3.1";
+            int lengthOfKey = ClientMessage.Text.Length;
 
+            try
+            {
+                string content = File.ReadAllText(path);
 
+                cifer = content.Substring(0, lengthOfKey);
+                
+                File.WriteAllText(path, content.Substring(lengthOfKey - 1), Encoding.UTF8);
 
-
-            //PublicKey.Text = newKey;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
 
         private async void StartConnection()
@@ -54,9 +67,9 @@ namespace SecureChat.Client
             {
                 await connection.StartAsync();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                MessageBox.Show(e.Message);
             }
         }
         
@@ -65,17 +78,17 @@ namespace SecureChat.Client
         {
             try
             {
-                await connection.InvokeAsync("SendMessage", ClientMessage.Text, PublicKey.Text);
+                GetCiferFromTxt();
+                await connection.InvokeAsync("SendMessage", ClientMessage.Text, cifer);
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                MessageBox.Show("Something went wrong... Please, try again");
+                MessageBox.Show(e.Message);
             }
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            //PublicKey.Text = "";
             ClientMessage.Text = "";
         }
     }
