@@ -23,7 +23,6 @@ namespace SecureChat.Client
     public partial class MainWindow : Window
     {
         HubConnection connection;
-        string cifer;
         public MainWindow()
         {
             InitializeComponent();
@@ -40,23 +39,22 @@ namespace SecureChat.Client
             };
         }
 
-         private void GetCiferFromTxt()
+         private string GetCiferFromTxt(int lengthOfKey)
         {
             string path = @"Key.txt";
-            int lengthOfKey = ClientMessage.Text.Length;
-
             try
             {
                 string content = File.ReadAllText(path);
 
-                cifer = content.Substring(0, lengthOfKey);
-                
-                File.WriteAllText(path, content.Substring(lengthOfKey - 1), Encoding.UTF8);
+                var cifer = content.Substring(0, lengthOfKey);
 
+                File.WriteAllText(path, content.Substring(lengthOfKey - 1), Encoding.UTF8);
+                return cifer;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
+                throw;
             }
         }
 
@@ -80,14 +78,15 @@ namespace SecureChat.Client
         {
             try
             {
-                GetCiferFromTxt();
-
-                await connection.InvokeAsync("SendMessage", ClientMessage.Text);
+                var cifer = GetCiferFromTxt(ClientMessage.Text.Length);
+                var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
+                await connection.InvokeAsync("SendMessage", encrypted);
             }
             catch (Exception e1)
             {
                 MessageBox.Show(e1.Message);
             }
+            
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
