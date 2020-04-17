@@ -36,13 +36,14 @@ namespace SecureChat.Server
                 {
                     await context.Response.WriteAsync("Hello");
                 });
+                endpoints.MapHub<SecureChatHub>("/chathub");
             });
         }
         public class SecureChatHub : Hub
         {
             public Task SendMessage(string message)
             {
-                return Clients.Caller.SendAsync("ReceiveMessage", message);
+                return Clients.All.SendAsync("ReceiveMessage", message);
             }
         }
     }

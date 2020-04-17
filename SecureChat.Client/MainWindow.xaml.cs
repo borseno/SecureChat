@@ -1,5 +1,4 @@
-﻿using CryptoAlgorithms.Helpers;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +32,7 @@ namespace SecureChat.Client
                 .Build();
 
             StartConnection();
-
+            connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
             connection.Closed += async (error) =>
             {
                 await Task.Delay(new Random().Next(0, 5) * 1000);
@@ -43,7 +42,7 @@ namespace SecureChat.Client
 
          private void GetCiferFromTxt()
         {
-            string path = @"C:\GitHub\SecureChat\SecureChat.Client\bin\Debug\netcoreapp3.1";
+            string path = @"Key.txt";
             int lengthOfKey = ClientMessage.Text.Length;
 
             try
@@ -73,17 +72,21 @@ namespace SecureChat.Client
             }
         }
         
-
+        private void ReceiveMessage(string str)
+        {
+            ReceivedMessage.Text = str;
+        }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 GetCiferFromTxt();
-                await connection.InvokeAsync("SendMessage", ClientMessage.Text, cifer);
+
+                await connection.InvokeAsync("SendMessage", ClientMessage.Text);
             }
-            catch (Exception e)
+            catch (Exception e1)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e1.Message);
             }
         }
 
