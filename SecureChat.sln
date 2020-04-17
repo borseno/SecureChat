@@ -8,6 +8,7 @@ EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CryptoAlgorithms", "CryptoAlgorithms\CryptoAlgorithms.fsproj", "{A37B356D-B1C2-45D7-A072-6815E59AE051}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "KeyGenerator_Sample", "ConsoleApp1\KeyGenerator_Sample.fsproj", "{6B6E0DBD-0BAF-44B7-AFA1-D9D79E9D12AD}"
+
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureChat.Client", "SecureChat.Client\SecureChat.Client.csproj", "{C5EEFF8C-2BB1-4ACD-B726-16CE903AB519}"
 EndProject
 Global
