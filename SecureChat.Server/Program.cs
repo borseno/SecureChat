@@ -17,15 +17,6 @@ namespace SecureChat.Server
             CreateHostBuilder(args).Build().Run();
         }
 
-        public class SecureChatHub : Hub
-        {
-            public Task SendMessage(string message, string public_key)
-            {
-                return Clients.All.SendAsync("ReceiveMessage", message);
-            }
-        }
-
-       
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

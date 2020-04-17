@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static SecureChat.Server.Program;
 
 namespace SecureChat.Server
 {
@@ -32,8 +32,18 @@ namespace SecureChat.Server
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<SecureChatHub>("/chathub");
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hello");
+                });
             });
+        }
+        public class SecureChatHub : Hub
+        {
+            public Task SendMessage(string message)
+            {
+                return Clients.Caller.SendAsync("ReceiveMessage", message);
+            }
         }
     }
 }
