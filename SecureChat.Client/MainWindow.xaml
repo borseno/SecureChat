@@ -7,6 +7,12 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <TextBox x:Name="ClientMessage" HorizontalAlignment="Left" Margin="31,102,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="271" Height="87"/>
+        <Button x:Name="SendButton" Content="Отправить" HorizontalAlignment="Left" Margin="32,263,0,0" VerticalAlignment="Top" Height="33" Width="134"/>
+        <Button x:Name="ClearButton" Content="Очистить" HorizontalAlignment="Left" Margin="171,263,0,0" VerticalAlignment="Top" Height="34" Width="131"/>
+        <Label x:Name="LabelMessage" Content="Введите сообщение:" HorizontalAlignment="Left" Margin="31,62,0,0" VerticalAlignment="Top" Width="181" FontSize="16" FontWeight="Bold"/>
+        <Label x:Name="LabelPrivateKey" Content="Ключ" HorizontalAlignment="Left" Margin="32,212,0,0" VerticalAlignment="Top" Width="58" FontWeight="Bold"/>
+        <TextBox x:Name="PublicKey" HorizontalAlignment="Left" Margin="95,217,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="207"/>
 
     </Grid>
 </Window>
