@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +22,77 @@ namespace SecureChat.Client
     /// </summary>
     public partial class MainWindow : Window
     {
+        HubConnection connection;
+        string cifer;
         public MainWindow()
         {
             InitializeComponent();
+
+            connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
+                .Build();
+
+            StartConnection();
+            connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
+            connection.Closed += async (error) =>
+            {
+                await Task.Delay(new Random().Next(0, 5) * 1000);
+                await connection.StartAsync();
+            };
+        }
+
+         private void GetCiferFromTxt()
+        {
+            string path = @"Key.txt";
+            int lengthOfKey = ClientMessage.Text.Length;
+
+            try
+            {
+                string content = File.ReadAllText(path);
+
+                cifer = content.Substring(0, lengthOfKey);
+                
+                File.WriteAllText(path, content.Substring(lengthOfKey - 1), Encoding.UTF8);
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        private async void StartConnection()
+        {
+            try
+            {
+                await connection.StartAsync();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+        
+        private void ReceiveMessage(string str)
+        {
+            ReceivedMessage.Text = str;
+        }
+        private async void SendButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GetCiferFromTxt();
+
+                await connection.InvokeAsync("SendMessage", ClientMessage.Text);
+            }
+            catch (Exception e1)
+            {
+                MessageBox.Show(e1.Message);
+            }
+        }
+
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClientMessage.Text = "";
         }
     }
 }
