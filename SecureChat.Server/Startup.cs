@@ -41,9 +41,10 @@ namespace SecureChat.Server
         }
         public class SecureChatHub : Hub
         {
-            public Task SendMessage(string message)
+            public async Task SendMessage(string message)
             {
-                return Clients.Others.SendAsync("ReceiveMessage", message);
+                await Clients.All.SendAsync("ReceiveMessage", message);
+                ;
             }
         }
     }

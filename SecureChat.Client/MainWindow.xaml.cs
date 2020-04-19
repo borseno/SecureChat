@@ -30,10 +30,11 @@ namespace SecureChat.Client
             connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
                 .Build();
 
-            StartConnection();
             connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
+            StartConnection();
             connection.Closed += async (error) =>
             {
+                MessageBox.Show(error.Message);
                 await Task.Delay(new Random().Next(0, 5) * 1000);
                 await connection.StartAsync();
             };

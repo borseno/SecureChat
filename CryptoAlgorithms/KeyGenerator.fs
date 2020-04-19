@@ -1,5 +1,6 @@
 ﻿namespace CryptoAlgorithms.Helpers
 
+
 module RandomOrg =
     open FSharp.Data
     open System
@@ -9,7 +10,7 @@ module RandomOrg =
     let private _next amount (min, max) =
         async {
             let! nums = Http.AsyncRequestString(formatRequest amount min max)
-            let nums = nums.Split("\n") in
+            let nums = nums.Split(Seq.toArray (seq {"\n"}), StringSplitOptions.RemoveEmptyEntries) in
             return Seq.take (nums.Length - 1) nums 
             |> Seq.map (fun i -> Int32.Parse(i))
         }
