@@ -26,11 +26,12 @@ namespace SecureChat.Client
         public MainWindow()
         {
             InitializeComponent();
-
-            StartConnection();
-            connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
+            
+            connection = new HubConnectionBuilder().WithUrl("http://localhost:5000/chathub")
                 .Build();
 
+            StartConnection();
+            
             connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
             
             connection.Closed += async (error) =>
