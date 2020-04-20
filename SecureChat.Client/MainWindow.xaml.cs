@@ -27,11 +27,12 @@ namespace SecureChat.Client
         {
             InitializeComponent();
 
+            StartConnection();
             connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
                 .Build();
 
             connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
-            StartConnection();
+            
             connection.Closed += async (error) =>
             {
                 MessageBox.Show(error.Message);
@@ -49,7 +50,8 @@ namespace SecureChat.Client
 
                 var cifer = content.Substring(0, lengthOfKey);
 
-                File.WriteAllText(path, content.Substring(lengthOfKey - 1), Encoding.UTF8);
+                File.WriteAllText(path, content.Substring(lengthOfKey-2), Encoding.UTF8);
+
                 return cifer;
             }
             catch (Exception e)
@@ -73,7 +75,10 @@ namespace SecureChat.Client
         
         private void ReceiveMessage(string str)
         {
-            ReceivedMessage.Text = str;
+
+            var cifer = GetCiferFromTxt(str.Length);
+            var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
+            ReceivedMessage.Text = decrypted;
         }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -89,7 +94,10 @@ namespace SecureChat.Client
             }
             
         }
-
+        private void ClearButton2_Click(object sender, RoutedEventArgs e)
+        {
+            ReceivedMessage.Text = "";
+        }
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             ClientMessage.Text = "";

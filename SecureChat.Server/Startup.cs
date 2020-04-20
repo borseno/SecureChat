@@ -43,7 +43,7 @@ namespace SecureChat.Server
         {
             public async Task SendMessage(string message)
             {
-                await Clients.All.SendAsync("ReceiveMessage", message);
+                await Clients.Others.SendAsync("ReceiveMessage", message);
                 ;
             }
         }
