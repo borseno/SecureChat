@@ -51,7 +51,7 @@ namespace SecureChat.Client
 
                 var cifer = content.Substring(0, lengthOfKey);
 
-                File.WriteAllText(path, content.Substring(lengthOfKey-2), Encoding.UTF8);
+                File.WriteAllText(path, content.Substring(lengthOfKey), Encoding.UTF8);
 
                 return cifer;
             }
