@@ -27,9 +27,10 @@ namespace SecureChat.Client
         {
             InitializeComponent();
 
-            StartConnection();
             connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
                 .Build();
+
+            StartConnection();
 
             connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
             
@@ -41,18 +42,22 @@ namespace SecureChat.Client
             };
         }
 
-         private string GetCiferFromTxt(int lengthOfKey)
+         private string GetCiferFromTxtAsync(int lengthOfKey)
         {
             string path = @"Key.txt";
             try
             {
-                string content = File.ReadAllText(path);
+                using (var fs = new FileStream(path, FileMode.Open))
+                using (var reader = new StreamReader(fs, Encoding.UTF8))
+                {
+                    fs.Seek(-lengthOfKey, SeekOrigin.End);
+                    string cifer = reader.ReadToEnd();
 
-                var cifer = content.Substring(0, lengthOfKey);
+                    fs.Seek(-lengthOfKey, SeekOrigin.End);
+                    fs.SetLength(fs.Position);
 
-                File.WriteAllText(path, content.Substring(lengthOfKey-2), Encoding.UTF8);
-
-                return cifer;
+                    return cifer;
+                }
             }
             catch (Exception e)
             {
@@ -76,7 +81,7 @@ namespace SecureChat.Client
         private void ReceiveMessage(string str)
         {
 
-            var cifer = GetCiferFromTxt(str.Length);
+            var cifer = GetCiferFromTxtAsync(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
             ReceivedMessage.Text = decrypted;
         }
@@ -84,7 +89,7 @@ namespace SecureChat.Client
         {
             try
             {
-                var cifer = GetCiferFromTxt(ClientMessage.Text.Length);
+                var cifer = GetCiferFromTxtAsync(ClientMessage.Text.Length);
                 var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
                 await connection.InvokeAsync("SendMessage", encrypted);
             }
