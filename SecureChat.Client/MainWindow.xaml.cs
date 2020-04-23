@@ -99,13 +99,13 @@ namespace SecureChat.Client
             }
             
         }
-        private void ClearButton2_Click(object sender, RoutedEventArgs e)
+        
+        private void OnClearing(object sender, RoutedEventArgs e)
         {
-            ReceivedMessage.Text = "";
-        }
-        private void ClearButton_Click(object sender, RoutedEventArgs e)
-        {
-            ClientMessage.Text = "";
+            if (ReferenceEquals(sender, ClearReceived))
+                ReceivedMessage.Clear();
+            else if (ReferenceEquals(sender, ClearClient))
+                ClientMessage.Clear();
         }
     }
 }

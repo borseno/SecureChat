@@ -9,11 +9,11 @@
     <Grid>
         <TextBox x:Name="ClientMessage" HorizontalAlignment="Left" Margin="31,102,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="271" Height="87"/>
         <Button x:Name="SendButton" Content="Отправить" Click="SendButton_Click" HorizontalAlignment="Left" Margin="31,0,0,0" VerticalAlignment="Center" Height="33" Width="134" RenderTransformOrigin="0.499,0.103"/>
-        <Button x:Name="ClearButton" Content="Очистить" Click="ClearButton_Click" HorizontalAlignment="Left" Margin="171,0,0,0" VerticalAlignment="Center" Height="34" Width="131"/>
+        <Button x:Name="ClearClient" Content="Очистить" Click="OnClearing" HorizontalAlignment="Left" Margin="171,0,0,0" VerticalAlignment="Center" Height="34" Width="131"/>
         <Label x:Name="LabelMessage" Content="Введите сообщение:" HorizontalAlignment="Left" Margin="32,62,0,0" VerticalAlignment="Top" Width="181" FontSize="16" FontWeight="Bold"/>
         <Label x:Name="LabekReceive" Content="Полученное сообщение:" HorizontalAlignment="Left" Margin="450,62,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="16" RenderTransformOrigin="0.491,0.569" Grid.ColumnSpan="2"/>
         <TextBox x:Name="ReceivedMessage" HorizontalAlignment="Left" Margin="450,102,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="273" Height="87" IsEnabled="False" Grid.ColumnSpan="2"/>
-        <Button x:Name="ClearButton2" Content="Очистить" Click="ClearButton2_Click" HorizontalAlignment="Left" Margin="524,201,0,0" VerticalAlignment="Top" Height="36" Width="124"/>
+        <Button x:Name="ClearReceived" Content="Очистить" Click="OnClearing" HorizontalAlignment="Left" Margin="524,201,0,0" VerticalAlignment="Top" Height="36" Width="124"/>
 
 
     </Grid>
