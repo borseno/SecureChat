@@ -24,6 +24,8 @@ namespace SecureChat.Client
     public partial class MainWindow : Window
     {
         HubConnection connection;
+        private List<char> _list;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -36,36 +38,14 @@ namespace SecureChat.Client
             connection.On("ReceiveMessage", (string str, User user, DateTime dateTime) => ReceiveMessage(str, user, dateTime));
             connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
 
+            SaveToList(@"Key.txt");
+
             connection.Closed += async (error) =>
             {
                 MessageBox.Show(error.Message);
                 await Task.Delay(new Random().Next(0, 5) * 1000);
                 await connection.StartAsync();
             };
-        }
-
-         private string GetCiferFromTxtAsync(int lengthOfKey)
-        {
-            string path = @"Key.txt";
-            try
-            {
-                using (var fs = new FileStream(path, FileMode.Open))
-                using (var reader = new StreamReader(fs, Encoding.UTF8))
-                {
-                    fs.Seek(-lengthOfKey, SeekOrigin.End);
-                    string cifer = reader.ReadToEnd();
-
-                    fs.Seek(-lengthOfKey, SeekOrigin.End);
-                    fs.SetLength(fs.Position);
-
-                    return cifer;
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-                throw;
-            }
         }
 
         private async void StartConnection()
@@ -79,11 +59,19 @@ namespace SecureChat.Client
                 MessageBox.Show(e.Message);
             }
         }
+
+        private string GetCifer(int lengthOfKey)
+        {
+            string cifer = new string(_list.TakeLast(lengthOfKey).ToArray());
+            _list.RemoveRange(_list.Count-lengthOfKey, lengthOfKey);
+            UpdateCounterTextBox();
+            return cifer;
+        }
         
         private void ReceiveMessage(string str, User user, DateTime dateTime)
         {
 
-            var cifer = GetCiferFromTxtAsync(str.Length);
+            var cifer = GetCifer(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
             ReceivedMessage.Text = "[ " + dateTime + "] " + user.Name + " (" + user.UserId + "): " +  decrypted;
         }
@@ -93,7 +81,7 @@ namespace SecureChat.Client
             {
                 try
                 {
-                    var cifer = GetCiferFromTxtAsync(ClientMessage.Text.Length);
+                    var cifer = GetCifer(ClientMessage.Text.Length);
                     var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
                     await connection.InvokeAsync("SendMessage", encrypted, NameTextBox.Text, DateTime.Now);
                 }
@@ -110,15 +98,20 @@ namespace SecureChat.Client
         private void OnUserNameChanged(User user)
         {
             //MessageBox.Show(String.Format("User {0} has changed his username to {1}", user.UserId, Name));
+
+        private void SaveToList(string path) => _list = File.ReadAllText(path).ToArray().ToList();
+
+        private void UpdateCounterTextBox()
+        {
+            CounterTextBox.Text = _list.Count.ToString();
         }
-       
 
         private void OnClearing(object sender, RoutedEventArgs e)
         {
             if (ReferenceEquals(sender, ClearReceived))
                 ReceivedMessage.Clear();
             else if (ReferenceEquals(sender, ClearClient))
-                ClientMessage.Clear();
+                ClientMessage.Clear();                
         }
     }
 }
