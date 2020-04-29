@@ -26,6 +26,7 @@ namespace SecureChat.Client
         HubConnection connection;
         private List<char> _list;
         DateTime lastModified;
+        string chatHistory;
         public MainWindow()
         {
             InitializeComponent();
@@ -86,7 +87,8 @@ namespace SecureChat.Client
 
             var cifer = GetCifer(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
-            ReceivedMessage.Text = "[" + dateTime + "] " + user.Name + " (" + user.UserId + "): " +  decrypted;
+            chatHistory += Environment.NewLine + "[" + dateTime + "] " + user.Name + " (" + user.UserId + "): " + decrypted;
+            ReceivedMessage.Text = chatHistory;
         }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -120,7 +122,9 @@ namespace SecureChat.Client
         
         private void OnUserNameChanged(User user)
         {
-            //MessageBox.Show(String.Format("User {0} has changed his username to {1}", user.UserId, Name));
+            chatHistory += Environment.NewLine + String.Format("User {0} has changed his username to {1}", user.UserId, user.Name);
+            ReceivedMessage.Text = chatHistory;
+        }
 
         private void SaveToList(string path) => _list = File.ReadAllText(path).ToArray().ToList();
 

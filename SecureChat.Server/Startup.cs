@@ -66,7 +66,11 @@ namespace SecureChat.Server
                 }
 
                 if (Name != user.Name)
-                    //await OnUserNameChanged(user);
+                {
+                    user.Name = Name;
+                    await OnUserNameChanged(user);
+                }
+                    
                 await Clients.Others.SendAsync("ReceiveMessage", message, user, dateTime);
                 ;
             }
