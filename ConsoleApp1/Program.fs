@@ -21,7 +21,7 @@ let main argv =
     let path = config.["path"]
     
     if validateKeyLength length then
-        let str = Async.RunSynchronously (CryptoAlgorithms.Helpers.KeyGenerator.getValues 5)
+        let str = Async.RunSynchronously (CryptoAlgorithms.Helpers.KeyGenerator.getValues (int length) )
         File.AppendAllText(path, str)
                                
     0
