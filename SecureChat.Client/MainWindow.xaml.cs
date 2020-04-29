@@ -112,7 +112,6 @@ namespace SecureChat.Client
             //MessageBox.Show(String.Format("User {0} has changed his username to {1}", user.UserId, Name));
         }
        
-        private void ClearButton_Click(object sender, RoutedEventArgs e)
 
         private void OnClearing(object sender, RoutedEventArgs e)
         {
