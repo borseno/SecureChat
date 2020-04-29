@@ -25,7 +25,7 @@ namespace SecureChat.Client
     {
         HubConnection connection;
         private List<char> _list;
-
+        DateTime lastModified;
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +39,7 @@ namespace SecureChat.Client
             connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
 
             SaveToList(@"Key.txt");
+            UpdatingFileModifiedInfo(@"Key.txt");
 
             connection.Closed += async (error) =>
             {
@@ -59,7 +60,19 @@ namespace SecureChat.Client
                 MessageBox.Show(e.Message);
             }
         }
-
+        private async void UpdatingFileModifiedInfo(string path)
+        {
+            while(true)
+            {
+                await Task.Delay(20);
+                if (IsFileChanged(path, lastModified))
+                {
+                    SaveToList(path);
+                    UpdateCounterTextBox();
+                    lastModified = File.GetLastWriteTime(path);
+                }
+            }
+        }
         private string GetCifer(int lengthOfKey)
         {
             string cifer = new string(_list.TakeLast(lengthOfKey).ToArray());
@@ -73,7 +86,7 @@ namespace SecureChat.Client
 
             var cifer = GetCifer(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
-            ReceivedMessage.Text = "[ " + dateTime + "] " + user.Name + " (" + user.UserId + "): " +  decrypted;
+            ReceivedMessage.Text = "[" + dateTime + "] " + user.Name + " (" + user.UserId + "): " +  decrypted;
         }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
@@ -95,6 +108,16 @@ namespace SecureChat.Client
             
         }
 
+       
+        private bool IsFileChanged(string path, DateTime dateTime)
+        {
+            DateTime dt = File.GetLastWriteTime(path);
+            if (dt != dateTime)
+                return true;
+            return false;
+        }
+    
+        
         private void OnUserNameChanged(User user)
         {
             //MessageBox.Show(String.Format("User {0} has changed his username to {1}", user.UserId, Name));
@@ -113,5 +136,7 @@ namespace SecureChat.Client
             else if (ReferenceEquals(sender, ClearClient))
                 ClientMessage.Clear();                
         }
+
+
     }
 }
