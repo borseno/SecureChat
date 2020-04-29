@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using SecureChat.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,8 +33,9 @@ namespace SecureChat.Client
 
             StartConnection();
 
-            connection.On("ReceiveMessage", (string str) => ReceiveMessage(str));
-            
+            connection.On("ReceiveMessage", (string str, User user, DateTime dateTime) => ReceiveMessage(str, user, dateTime));
+            connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
+
             connection.Closed += async (error) =>
             {
                 MessageBox.Show(error.Message);
@@ -78,34 +80,46 @@ namespace SecureChat.Client
             }
         }
         
-        private void ReceiveMessage(string str)
+        private void ReceiveMessage(string str, User user, DateTime dateTime)
         {
 
             var cifer = GetCiferFromTxtAsync(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
-            ReceivedMessage.Text = decrypted;
+            ReceivedMessage.Text = "[ " + dateTime + "] " + user.Name + " (" + user.UserId + "): " +  decrypted;
         }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (NameTextBox.Text != "")
             {
-                var cifer = GetCiferFromTxtAsync(ClientMessage.Text.Length);
-                var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
-                await connection.InvokeAsync("SendMessage", encrypted);
+                try
+                {
+                    var cifer = GetCiferFromTxtAsync(ClientMessage.Text.Length);
+                    var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
+                    await connection.InvokeAsync("SendMessage", encrypted, NameTextBox.Text, DateTime.Now);
+                }
+                catch (Exception e1)
+                {
+                    MessageBox.Show(e1.Message);
+                }
             }
-            catch (Exception e1)
-            {
-                MessageBox.Show(e1.Message);
-            }
+            else
+                MessageBox.Show("Please enter your name.");
             
         }
-        private void ClearButton2_Click(object sender, RoutedEventArgs e)
+
+        private void OnUserNameChanged(User user)
         {
-            ReceivedMessage.Text = "";
+            //MessageBox.Show(String.Format("User {0} has changed his username to {1}", user.UserId, Name));
         }
+       
         private void ClearButton_Click(object sender, RoutedEventArgs e)
+
+        private void OnClearing(object sender, RoutedEventArgs e)
         {
-            ClientMessage.Text = "";
+            if (ReferenceEquals(sender, ClearReceived))
+                ReceivedMessage.Clear();
+            else if (ReferenceEquals(sender, ClearClient))
+                ClientMessage.Clear();
         }
     }
 }
