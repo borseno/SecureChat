@@ -71,13 +71,13 @@ namespace SecureChat.Server
                     await OnUserNameChanged(user);
                 }
                     
-                await Clients.Others.SendAsync("ReceiveMessage", message, user, dateTime);
+                await Clients.All.SendAsync("ReceiveMessage", message, user, dateTime);
                 ;
             }
 
             public async Task OnUserNameChanged(User user)
             {
-                await Clients.Others.SendAsync("OnUserNameChanged", user);
+                await Clients.All.SendAsync("OnUserNameChanged", user);
                 ;
             }
         }

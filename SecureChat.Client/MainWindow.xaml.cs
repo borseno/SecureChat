@@ -77,17 +77,22 @@ namespace SecureChat.Client
                 }
             }
         }
-        private string GetCifer(int lengthOfKey)
+        private string GetCifer(int lengthOfKey, bool shouldRemove)
         {
             string cifer = new string(_list.TakeLast(lengthOfKey).ToArray());
-            _list.RemoveRange(_list.Count-lengthOfKey, lengthOfKey);
-            UpdateCounterTextBox();
+
+            if (shouldRemove)
+            {
+                _list.RemoveRange(_list.Count - lengthOfKey, lengthOfKey);
+                UpdateCounterTextBox();
+            }
+
             return cifer;
         }
         
         private void ReceiveMessage(string str, User user, DateTime dateTime)
         {
-            var cifer = GetCifer(str.Length);
+            var cifer = GetCifer(str.Length, true);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
             chatHistory += Environment.NewLine + "[" + dateTime + "] " + user.Name + " (" + user.UserId + "): " + decrypted;
             ReceivedMessage.Text = chatHistory;
@@ -96,7 +101,7 @@ namespace SecureChat.Client
         {
             if (! String.IsNullOrEmpty(NameTextBox.Text))
             {
-                var cifer = GetCifer(ClientMessage.Text.Length); 
+                var cifer = GetCifer(ClientMessage.Text.Length, false); 
                 var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray()); 
                 await connection.InvokeAsync("SendMessage", encrypted, NameTextBox.Text, DateTime.Now)
                     .WithShownException(); 
