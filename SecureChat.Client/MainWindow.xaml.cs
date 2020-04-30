@@ -42,8 +42,12 @@ namespace SecureChat.Client
         private List<char> _list;
         DateTime lastModified;
         string chatHistory;
+        string filename = @"Key.txt";
         public MainWindow()
         {
+            AppDomain currentDomain = AppDomain.CurrentDomain;
+            currentDomain.UnhandledException += new UnhandledExceptionEventHandler(MyHandler);
+
             InitializeComponent();
 
             connection = new HubConnectionBuilder().WithUrl("http://localhost:5000/chathub")
@@ -54,8 +58,8 @@ namespace SecureChat.Client
             connection.On("ReceiveMessage", (string str, User user, DateTime dateTime) => ReceiveMessage(str, user, dateTime));
             connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
 
-            SaveToList(@"Key.txt").GetAwaiter().GetResult();
-            UpdatingFileModifiedInfo(@"Key.txt");
+            SaveToList(filename).GetAwaiter().GetResult();
+            UpdatingFileModifiedInfo(filename);
 
             connection.Closed += async (error) =>
             {
@@ -90,7 +94,8 @@ namespace SecureChat.Client
 
             return cifer;
         }
-        
+       
+
         private void ReceiveMessage(string str, User user, DateTime dateTime)
         {
             var cifer = GetCifer(str.Length, true);
@@ -130,6 +135,11 @@ namespace SecureChat.Client
                 ReceivedMessage.Clear();
             else if (ReferenceEquals(sender, ClearClient))
                 ClientMessage.Clear();                
+        }
+        static void MyHandler(object sender, UnhandledExceptionEventArgs args)
+        {
+            Exception e = (Exception)args.ExceptionObject;
+            MessageBox.Show(e.Message);
         }
     }
 }
