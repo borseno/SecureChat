@@ -18,6 +18,21 @@ using System.Windows.Shapes;
 
 namespace SecureChat.Client
 {
+    public static class TaskExtensions
+    {
+        public static async Task WithShownException(this Task a)
+        {
+            try
+            {
+                await a;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+    }
+    
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -31,11 +46,11 @@ namespace SecureChat.Client
         {
             InitializeComponent();
 
-            connection = new HubConnectionBuilder().WithUrl("http://localhost:54847/chathub")
+            connection = new HubConnectionBuilder().WithUrl("http://localhost:5000/chathub")
                 .Build();
 
-            StartConnection();
-
+            var _ = connection.StartAsync().WithShownException(); 
+            
             connection.On("ReceiveMessage", (string str, User user, DateTime dateTime) => ReceiveMessage(str, user, dateTime));
             connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
 
@@ -48,18 +63,6 @@ namespace SecureChat.Client
                 await Task.Delay(new Random().Next(0, 5) * 1000);
                 await connection.StartAsync();
             };
-        }
-
-        private async void StartConnection()
-        {
-            try
-            {
-                await connection.StartAsync();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
         }
         private async void UpdatingFileModifiedInfo(string path)
         {
@@ -84,7 +87,6 @@ namespace SecureChat.Client
         
         private void ReceiveMessage(string str, User user, DateTime dateTime)
         {
-
             var cifer = GetCifer(str.Length);
             var decrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, str).ToArray());
             chatHistory += Environment.NewLine + "[" + dateTime + "] " + user.Name + " (" + user.UserId + "): " + decrypted;
@@ -92,47 +94,30 @@ namespace SecureChat.Client
         }
         private async void SendButton_Click(object sender, RoutedEventArgs e)
         {
-            if (NameTextBox.Text != "")
+            if (! String.IsNullOrEmpty(NameTextBox.Text))
             {
-                try
-                {
-                    var cifer = GetCifer(ClientMessage.Text.Length);
-                    var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray());
-                    await connection.InvokeAsync("SendMessage", encrypted, NameTextBox.Text, DateTime.Now);
-                }
-                catch (Exception e1)
-                {
-                    MessageBox.Show(e1.Message);
-                }
+                var cifer = GetCifer(ClientMessage.Text.Length); 
+                var encrypted = new string(CryptoAlgorithms.OneTimePad.encrypt(cifer, ClientMessage.Text).ToArray()); 
+                await connection.InvokeAsync("SendMessage", encrypted, NameTextBox.Text, DateTime.Now)
+                    .WithShownException(); 
             }
             else
                 MessageBox.Show("Please enter your name.");
             
         }
-
-       
-        private bool IsFileChanged(string path, DateTime dateTime)
-        {
-            DateTime dt = File.GetLastWriteTime(path);
-            if (dt != dateTime)
-                return true;
-            return false;
-        }
-    
         
+        private bool IsFileChanged(string path, DateTime dateTime) => File.GetLastWriteTime(path) != dateTime;
+
         private void OnUserNameChanged(User user)
         {
             chatHistory += Environment.NewLine + String.Format("User {0} has changed his username to {1}", user.UserId, user.Name);
             ReceivedMessage.Text = chatHistory;
         }
 
-        private void SaveToList(string path) => _list = File.ReadAllText(path).ToArray().ToList();
+        private void SaveToList(string path) => _list = File.ReadAllText(path).ToList();
 
-        private void UpdateCounterTextBox()
-        {
-            CounterTextBox.Text = _list.Count.ToString();
-        }
-
+        private void UpdateCounterTextBox() => CounterTextBox.Text = _list.Count.ToString();
+        
         private void OnClearing(object sender, RoutedEventArgs e)
         {
             if (ReferenceEquals(sender, ClearReceived))
@@ -140,7 +125,5 @@ namespace SecureChat.Client
             else if (ReferenceEquals(sender, ClearClient))
                 ClientMessage.Clear();                
         }
-
-
     }
 }
