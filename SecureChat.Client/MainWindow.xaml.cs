@@ -50,7 +50,9 @@ namespace SecureChat.Client
 
             InitializeComponent();
 
-            connection = new HubConnectionBuilder().WithUrl("http://localhost:5000/chathub")
+            string url = String.IsNullOrEmpty(UrlTextBox.Text) ? "http://localhost:54847/chathub" : UrlTextBox.Text;
+
+            connection = new HubConnectionBuilder().WithUrl(url)
                 .Build();
 
             var _ = connection.StartAsync().WithShownException(); 
@@ -84,6 +86,11 @@ namespace SecureChat.Client
         
         private string GetCifer(int lengthOfKey, bool shouldRemove)
         {
+            if(_list.Count < lengthOfKey)
+            {
+                MessageBox.Show("Text is greater then {0}. Get new key and try again.", _list.Count.ToString());
+                return null;
+            }
             string cifer = new string(_list.TakeLast(lengthOfKey).ToArray());
 
             if (shouldRemove)
@@ -91,6 +98,13 @@ namespace SecureChat.Client
                 for (int i = 0; i < lengthOfKey; i++)
                 {
                     _list.RemoveLast();
+                }
+
+                using (var fs = new FileStream(filename, FileMode.Open))
+                {
+                    fs.Seek(-lengthOfKey, SeekOrigin.End);
+                    fs.SetLength(fs.Position);
+                    fs.Close();
                 }
 
                 UpdateCounterTextBox();
