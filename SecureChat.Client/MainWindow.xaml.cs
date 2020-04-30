@@ -39,7 +39,7 @@ namespace SecureChat.Client
     public partial class MainWindow : Window
     {
         HubConnection connection;
-        private List<char> _list;
+        private LinkedList<char> _list;
         DateTime lastModified;
         string chatHistory;
         string filename = @"Key.txt";
@@ -88,7 +88,11 @@ namespace SecureChat.Client
 
             if (shouldRemove)
             {
-                _list.RemoveRange(_list.Count - lengthOfKey, lengthOfKey);
+                for (int i = 0; i < lengthOfKey; i++)
+                {
+                    _list.RemoveLast();
+                }
+
                 UpdateCounterTextBox();
             }
 
@@ -125,8 +129,8 @@ namespace SecureChat.Client
             ReceivedMessage.Text = chatHistory;
         }
 
-        private async Task SaveToList(string path) => _list = (await File.ReadAllTextAsync(path)).ToList();
-
+        private async Task SaveToList(string path) => _list = new LinkedList<char>((await File.ReadAllTextAsync(path)).ToArray<char>());
+       
         private void UpdateCounterTextBox() => CounterTextBox.Text = _list.Count.ToString();
         
         private void OnClearing(object sender, RoutedEventArgs e)
