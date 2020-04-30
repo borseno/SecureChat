@@ -54,7 +54,7 @@ namespace SecureChat.Client
             connection.On("ReceiveMessage", (string str, User user, DateTime dateTime) => ReceiveMessage(str, user, dateTime));
             connection.On("OnUserNameChanged", (User user) => OnUserNameChanged(user));
 
-            SaveToList(@"Key.txt");
+            SaveToList(@"Key.txt").GetAwaiter().GetResult();
             UpdatingFileModifiedInfo(@"Key.txt");
 
             connection.Closed += async (error) =>
@@ -71,12 +71,13 @@ namespace SecureChat.Client
                 await Task.Delay(20);
                 if (IsFileChanged(path, lastModified))
                 {
-                    SaveToList(path);
+                    await SaveToList(path);
                     UpdateCounterTextBox();
                     lastModified = File.GetLastWriteTime(path);
                 }
             }
         }
+        
         private string GetCifer(int lengthOfKey, bool shouldRemove)
         {
             string cifer = new string(_list.TakeLast(lengthOfKey).ToArray());
@@ -119,7 +120,7 @@ namespace SecureChat.Client
             ReceivedMessage.Text = chatHistory;
         }
 
-        private void SaveToList(string path) => _list = File.ReadAllText(path).ToList();
+        private async Task SaveToList(string path) => _list = (await File.ReadAllTextAsync(path)).ToList();
 
         private void UpdateCounterTextBox() => CounterTextBox.Text = _list.Count.ToString();
         
